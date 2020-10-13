@@ -38,25 +38,22 @@ module.exports = {
         }
     },
     updateUser: (req, res) => {
-        if (!req.body.name || !req.body.email || !req.body.password) {
-            return res.status(400).json({confirmation: 'fail', message: 'All inputs must be filled'});
-        }
-        // Check if user already exists.
-        let existingUser = users.filter((user) => user.email === req.body.email);
-        if (existingUser.length) {
-            return res.status(400).send('User already exists')
-        }
+        let updateUser = req.body
+        users.filter((foundUser) => {
+            // find the user
+            if (foundUser.id === req.params.id) {
+                foundUser.name = updateUser.name 
+                ? updateUser.name 
+                : foundUser.name
     
-        const newUser = {};
-    
-        newUser.name = req.body.name;
-        newUser.email = req.body.email;
-        newUser.password = req.body.password;
-        newUser.id = String(users.length + 1);
-        //add user to array.
-        users.push(newUser);
-        //Returning new user.
-        return res.status(200).json({confirmation: "success", newUser});
+                foundUser.password = updateUser.password
+                ? updateUser.password
+                : foundUser.password
+                
+            }
+        });
+        
+        return res.status(200).json({message: "User Updates", users})
     },
     deleteUser: (req, res) => {
         // Filter user based on id parameter in address 
